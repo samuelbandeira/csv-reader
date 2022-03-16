@@ -4,7 +4,7 @@ import com.example.csvReader.dto.FolderDTO;
 import com.example.csvReader.model.FolderEntity;
 import org.mapstruct.Mapper;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface FolderMapper {
 
     FolderEntity toEntity(FolderDTO folderDTO);
