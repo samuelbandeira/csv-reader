@@ -14,7 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 class CsvHelperTest {
 
     @Autowired
-    public CsvHelper csvHelper;
+    private CsvHelper csvHelper;
 
     @Test
     void whenFileHasNotCSVContentType_thenReturnFalse() {

@@ -13,10 +13,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -59,7 +61,22 @@ public class FolderFacade {
 
     public Page<FolderDTO> findByName(String itemName, String sortProperty, PageRequest pageRequest) {
 
-        pageRequest.withSort(Sort.Direction.ASC, sortProperty);
-        return folderRepository.findAllByName(itemName, pageRequest);
+        if (pageRequest == null) {
+            pageRequest = PageRequest.of(0, 100);
+        }
+
+        List<String> sortableAtributes = Arrays.asList("priority");
+        if (sortProperty != null && sortableAtributes.contains(sortProperty)) {
+            pageRequest = pageRequest.withSort(Sort.Direction.ASC, sortProperty);
+        }
+
+        Page<FolderEntity> listReturned;
+        if (itemName != null && itemName.isBlank()) {
+            listReturned = folderRepository.findAllByName(itemName, pageRequest);
+        } else {
+            listReturned = folderRepository.findAll(pageRequest);
+        }
+
+        return listReturned.map(folderMapper::toDTO);
     }
 }

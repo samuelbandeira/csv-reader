@@ -21,10 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class FolderServiceTest {
 
     @Mock
-    public FolderRepository folderRepository;
+    private FolderRepository folderRepository;
     @Autowired
     @InjectMocks
-    public FolderService folderService;
+    private FolderService folderService;
 
     @Test
     void whenFolderIdIsDuplicated_thenThrowFolderException() {
