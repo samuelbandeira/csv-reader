@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.Value;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -29,13 +28,13 @@ public class FolderEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @SequenceGenerator(name = "folder_seq", sequenceName = "folder_seq")
-    public Long id;
-    public String name;
-    public Long priority;
+    private Long id;
+    private String name;
+    private Long priority;
     @Transient
-    public String pathName;
+    private String pathName;
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
-    public FolderEntity parent;
+    private FolderEntity parent;
 }

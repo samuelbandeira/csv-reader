@@ -1,7 +1,6 @@
 package com.example.csvReader.service;
 
 import com.example.csvReader.exception.FolderException;
-import com.example.csvReader.helper.CsvHelper;
 import com.example.csvReader.model.FolderEntity;
 import com.example.csvReader.repository.FolderRepository;
 import org.junit.jupiter.api.Test;
@@ -11,16 +10,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-@ContextConfiguration(classes = { FolderService.class })
+@ContextConfiguration(classes = {FolderService.class})
 class FolderServiceTest {
 
     @Mock
@@ -30,7 +27,7 @@ class FolderServiceTest {
     public FolderService folderService;
 
     @Test
-    public void whenFolderIdIsDuplicated_thenThrowFolderException() {
+    void whenFolderIdIsDuplicated_thenThrowFolderException() {
         final FolderEntity folderEntity = FolderEntity.builder()
             .id(1L)
             .build();
@@ -47,7 +44,7 @@ class FolderServiceTest {
     }
 
     @Test
-    public void whenFolderParentDoNotExist_thenThrowFolderException() {
+    void whenFolderParentDoNotExist_thenThrowFolderException() {
         final FolderEntity folderEntity = FolderEntity.builder()
             .id(1L)
             .parent(FolderEntity.builder().id(2L).build())
@@ -63,6 +60,21 @@ class FolderServiceTest {
         );
 
         assertTrue(thrown.getMessage().contains("could not find parent"));
+    }
+
+    @Test
+    void whenFolderIsComplete_thenShouldReturnFolder() {
+        final FolderEntity folderEntity = FolderEntity.builder()
+            .id(1L)
+            .parent(FolderEntity.builder().id(2L).build())
+            .build();
+
+        Mockito.when(folderRepository.existsById(1L)).thenReturn(false);
+        Mockito.when(folderRepository.existsById(2L)).thenReturn(true);
+        Mockito.when(folderRepository.save(folderEntity)).thenReturn(folderEntity);
+
+        final FolderEntity save = folderService.save(folderEntity);
+        assertEquals(folderEntity, save);
     }
 
 }

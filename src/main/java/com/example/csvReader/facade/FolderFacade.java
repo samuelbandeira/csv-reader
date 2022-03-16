@@ -9,6 +9,9 @@ import com.example.csvReader.repository.FolderRepository;
 import com.example.csvReader.service.FolderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,11 +25,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class FolderFacade {
 
     @Autowired
-    public CsvHelper csvHelper;
+    private CsvHelper csvHelper;
     @Autowired
-    public FolderMapper folderMapper;
+    private FolderMapper folderMapper;
     @Autowired
-    public FolderService folderService;
+    private FolderService folderService;
+    @Autowired
+    private FolderRepository folderRepository;
 
     @Transactional
     public List<FolderDTO> save(MultipartFile file) {
@@ -50,5 +55,11 @@ public class FolderFacade {
         }
 
         return returnList;
+    }
+
+    public Page<FolderDTO> findByName(String itemName, String sortProperty, PageRequest pageRequest) {
+
+        pageRequest.withSort(Sort.Direction.ASC, sortProperty);
+        return folderRepository.findAllByName(itemName, pageRequest);
     }
 }
