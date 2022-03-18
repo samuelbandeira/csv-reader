@@ -37,4 +37,11 @@ public class FolderEntity {
     @ManyToOne
     @JoinColumn(name = "parent_id")
     private FolderEntity parent;
+
+    public String getPathName() {
+        if (parent == null) {
+            return name;
+        }
+        return parent.getPathName() + "/" + getName();
+    }
 }
