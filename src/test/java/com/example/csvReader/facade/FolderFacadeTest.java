@@ -1,20 +1,14 @@
 package com.example.csvReader.facade;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
-import com.example.csvReader.dto.FolderDTO;
 import com.example.csvReader.mapper.FolderMapper;
 import com.example.csvReader.mapper.FolderMapperImpl;
 import com.example.csvReader.model.FolderEntity;
 import com.example.csvReader.repository.FolderRepository;
-import com.example.csvReader.service.FolderService;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -25,10 +19,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -48,7 +40,7 @@ class FolderFacadeTest {
   private FolderFacade folderFacade;
 
   @Test
-  void whenItemNameIsNull_thenCallFindAll() {
+  void givenItemNameIsNull_thenCallFindAll() {
 
     Mockito.when(folderRepository.findAll(Mockito.any(PageRequest.class))).thenReturn(new PageImpl<>(new CopyOnWriteArrayList<>()));
     folderFacade.findByName(null, null, null);
@@ -57,7 +49,17 @@ class FolderFacadeTest {
   }
 
   @Test
-  void whenPageableIsNull_thenCallFindAllWithDefaultPageRequest() {
+  void givenItemNameIsNotNull_thenCallFindAll() {
+
+    Mockito.when(folderRepository.findByName(Mockito.anyString(), Mockito.any(PageRequest.class))).thenReturn(new PageImpl<>(new CopyOnWriteArrayList<>()));
+    folderFacade.findByName("name", null, null);
+
+    Mockito.verify(folderRepository, Mockito.never()).findAll(Mockito.any(PageRequest.class));
+    Mockito.verify(folderRepository, Mockito.times(1)).findByName(Mockito.anyString(), Mockito.any(PageRequest.class));
+  }
+
+  @Test
+  void givenPageableIsNull_thenCallFindAllWithDefaultPageRequest() {
 
     Mockito.when(folderRepository.findAll(Mockito.any(PageRequest.class))).thenReturn(new PageImpl<>(new CopyOnWriteArrayList<>()));
     folderFacade.findByName(null, null, null);
@@ -69,7 +71,19 @@ class FolderFacadeTest {
   }
 
   @Test
-  void whenSortAttributeIsNull_thenCallFindAllWithoutSort() {
+  void givenPageableIsNotNull_thenCallFindAllWithDefaultPageRequest() {
+
+    Mockito.when(folderRepository.findAll(Mockito.any(PageRequest.class))).thenReturn(new PageImpl<>(new CopyOnWriteArrayList<>()));
+    folderFacade.findByName(null, null, PageRequest.of(2, 50));
+
+    Mockito.verify(folderRepository).findAll(pageCaptor.capture());
+
+    Assertions.assertEquals(50, pageCaptor.getValue().getPageSize());
+    Assertions.assertEquals(2, pageCaptor.getValue().getPageNumber());
+  }
+
+  @Test
+  void givenSortAttributeIsNull_thenCallFindAllWithoutSort() {
 
     Mockito.when(folderRepository.findAll(Mockito.any(PageRequest.class))).thenReturn(new PageImpl<>(new CopyOnWriteArrayList<>()));
     folderFacade.findByName(null, null, null);
@@ -80,7 +94,7 @@ class FolderFacadeTest {
   }
 
   @Test
-  void whenSortAttributeIsPriority_thenCallFindAllSortByPriorityASC() {
+  void givenSortAttributeIsPriority_thenCallFindAllSortByPriorityASC() {
 
     Mockito.when(folderRepository.findAll(Mockito.any(PageRequest.class))).thenAnswer(invocationOnMock -> {
       return new PageImpl<FolderEntity>(new CopyOnWriteArrayList<>(), invocationOnMock.getArgument(0), 0);
@@ -97,7 +111,7 @@ class FolderFacadeTest {
   }
 
   @Test
-  void whenSortAttributeIsName_thenCallFindAllSortByPriorityASC() {
+  void givenSortAttributeIsName_thenCallFindAllSortByPriorityASC() {
 
     Mockito.when(folderRepository.findAll(Mockito.any(PageRequest.class))).thenAnswer(invocationOnMock -> {
       return new PageImpl<FolderEntity>(new CopyOnWriteArrayList<>(), invocationOnMock.getArgument(0), 0);

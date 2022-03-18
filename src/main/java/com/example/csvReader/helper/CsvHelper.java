@@ -18,21 +18,16 @@ import java.util.List;
 @Service
 @Slf4j
 public class CsvHelper {
-
-    public boolean hasCSVFormat(MultipartFile file) {
-        return "text/csv".equals(file.getContentType());
-    }
-
     public List<FolderDTO> csvToFolderDTO(InputStream inputStream) {
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT)) {
+             CSVParser csvParser = CSVFormat.EXCEL.withHeader().parse(fileReader)) {
             List<FolderDTO> folders = new ArrayList<>();
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             for (CSVRecord csvRecord : csvRecords) {
                 FolderDTO folderDTO = FolderDTO.builder()
                     .id(Long.parseLong(csvRecord.get("id")))
-                    .parent(FolderDTO.builder().id(Long.parseLong(csvRecord.get("parent_id"))).build())
-                    .name(csvRecord.get("item_name"))
+                    .parent_id(getParentFolder(csvRecord))
+                    .item_name(csvRecord.get("item_name"))
                     .priority(Long.parseLong(csvRecord.get("priority")))
                     .build();
                 folders.add(folderDTO);
@@ -42,5 +37,10 @@ public class CsvHelper {
             log.error("fail to parse CSV file: " + e.getMessage());
             throw new RuntimeException("fail to parse CSV file: " + e.getMessage());
         }
+    }
+
+    private Long getParentFolder(CSVRecord csvRecord) {
+        String parentId = csvRecord.get("parent_id");
+        return "nil".equals(parentId) ? null : Long.parseLong(parentId);
     }
 }

@@ -1,11 +1,12 @@
 version: '2'
 
 services:
-  app:
+  csv-reader:
     image: 'csv-reader:latest'
     build:
       context: .
-    container_name: app
+      dockerfile: Dockerfile
+    container_name: csv-reader
     depends_on:
       - db
     environment:
@@ -22,3 +23,5 @@ services:
     environment:
       - POSTGRES_USER=compose-postgres
       - POSTGRES_PASSWORD=compose-postgres
+    ports:
+      - 5432:5432

@@ -13,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
@@ -37,10 +36,6 @@ public class FolderFacade {
 
     @Transactional
     public List<FolderDTO> save(MultipartFile file) {
-        if (!csvHelper.hasCSVFormat(file)) {
-            log.error("invalid content type");
-            throw new FolderException("invalid content type");
-        }
 
         List<FolderDTO> returnList = new CopyOnWriteArrayList<>();
         try {
@@ -71,8 +66,8 @@ public class FolderFacade {
         }
 
         Page<FolderEntity> listReturned;
-        if (itemName != null && itemName.isBlank()) {
-            listReturned = folderRepository.findAllByName(itemName, pageRequest);
+        if (itemName != null && !itemName.isBlank()) {
+            listReturned = folderRepository.findByName(itemName, pageRequest);
         } else {
             listReturned = folderRepository.findAll(pageRequest);
         }
