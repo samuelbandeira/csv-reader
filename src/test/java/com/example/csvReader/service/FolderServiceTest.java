@@ -27,7 +27,7 @@ class FolderServiceTest {
     private FolderService folderService;
 
     @Test
-    void whenFolderIdIsDuplicated_thenThrowFolderException() {
+    void givenFolderIdIsDuplicated_whenSave_thenThrowFolderException() {
         final FolderEntity folderEntity = FolderEntity.builder()
             .id(1L)
             .build();
@@ -44,7 +44,7 @@ class FolderServiceTest {
     }
 
     @Test
-    void whenFolderParentDoNotExist_thenThrowFolderException() {
+    void givenFolderParentDoNotExist_whenSave_thenThrowFolderException() {
         final FolderEntity folderEntity = FolderEntity.builder()
             .id(1L)
             .parent(FolderEntity.builder().id(2L).build())
@@ -63,7 +63,22 @@ class FolderServiceTest {
     }
 
     @Test
-    void whenFolderIsComplete_thenShouldReturnFolder() {
+    void givenFolderIsComplete_whenSave_thenShouldReturnFolder() {
+        final FolderEntity folderEntity = FolderEntity.builder()
+            .id(1L)
+            .parent(FolderEntity.builder().id(2L).build())
+            .build();
+
+        Mockito.when(folderRepository.existsById(1L)).thenReturn(false);
+        Mockito.when(folderRepository.existsById(2L)).thenReturn(true);
+        Mockito.when(folderRepository.save(folderEntity)).thenReturn(folderEntity);
+
+        final FolderEntity save = folderService.save(folderEntity);
+        assertEquals(folderEntity, save);
+    }
+
+    @Test
+    void givenFolderParentIsNull_whenSave_thenShouldReturnFolder() {
         final FolderEntity folderEntity = FolderEntity.builder()
             .id(1L)
             .parent(FolderEntity.builder().id(2L).build())

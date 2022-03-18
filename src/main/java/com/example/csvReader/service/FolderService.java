@@ -22,7 +22,9 @@ public class FolderService {
         }
 
 
-        if (!folderRepository.existsById(folderEntity.getParent().getId())) {
+        if (folderEntity.getParent() != null
+            && folderEntity.getParent().getId() != null
+            && !folderRepository.existsById(folderEntity.getParent().getId())) {
             log.error("could not find parent {} for folder id {}", folderEntity.getParent(), folderEntity.getId());
             throw new FolderException("could not find parent");
         }
