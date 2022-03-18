@@ -1,4 +1,4 @@
-##CSV-Reader
+## CSV-Reader
 
 ### Requirements
 
@@ -14,7 +14,7 @@ To execute this app you will need to execute in the project contextpath
 
 Make sure these two files have executable permissions
 
-##TODO
+## TODO
 
 - Improve CSV upload tests
 - Create e2e tests
