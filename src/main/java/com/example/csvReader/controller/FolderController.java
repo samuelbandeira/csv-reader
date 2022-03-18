@@ -24,15 +24,17 @@ public class FolderController {
 
     @PostMapping(value = "/csv/upload")
     @ResponseStatus(HttpStatus.CREATED)
-    public void handleCsvUpload(@RequestBody MultipartFile file) {
+    public void handleCsvUpload(@RequestParam(name = "file") MultipartFile file) {
         folderFacade.save(file);
     }
 
     @GetMapping(value = "/folders")
     public Page<FolderDTO> findByName(@RequestParam(name = "item_name", required = false) String itemName,
                                       @RequestParam(name = "sort", required = false) String sortProperty,
-                                      @RequestParam(name = "page",required = false) int page,
-                                      @RequestParam(name = "limit", required = false) int limit) {
+                                      @RequestParam(name = "page",required = false) Integer page,
+                                      @RequestParam(name = "limit", required = false) Integer limit) {
+        page = page == null ? 0 : page;
+        limit = limit == null ? 100 : limit;
         return folderFacade.findByName(itemName, sortProperty, PageRequest.of(page, limit));
     }
 }
