@@ -14,9 +14,9 @@ import lombok.Setter;
 public class FolderDTO {
 
     public Long id;
-    public String name;
+    public String item_name;
     public Long priority;
-    public String pathName;
+    public String path_name;
 
-    public FolderDTO parent;
+    public Long parent_id;
 }
